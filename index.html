@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBER NINJA RUNNER | Juego Web Épico</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="description" content="Cyber Ninja Runner - Juego web gratuito con gráficos pixel art, combos, power-ups y mecánicas adictivas. ¡Corre, salta, lucha y sobrevive en Neo-Tokyo!">
+    <meta name="keywords" content="juego cyberpunk, ninja, runner, pixel art, juego web, html5, gratis, adictivo">
+</head>
+<body>
+    <!-- Fondo animado cyberpunk -->
+    <div class="cyber-background">
+        <div class="grid-lines"></div>
+        <div class="neon-grid"></div>
+        <div class="floating-shapes"></div>
+    </div>
+    
+    <div class="main-container">
+        <!-- Header épico -->
+        <header class="game-header">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <h1>CYBER <span class="neon-text">NINJA</span> RUNNER</h1>
+                <i class="fas fa-bolt"></i>
+            </div>
+            <div class="tagline">
+                <p>¡Corre, hackea, sobrevive en <span class="glitch">Neo-Tokyo 2089</span>!</p>
+            </div>
+        </header>
+        
+        <!-- Panel de stats en tiempo real -->
+        <div class="stats-panel">
+            <div class="stat">
+                <span class="stat-icon">⚡</span>
+                <div>
+                    <div class="stat-label">VELOCIDAD</div>
+                    <div class="stat-value" id="speedStat">1.0x</div>
+                </div>
+            </div>
+            <div class="stat">
+                <span class="stat-icon">🔥</span>
+                <div>
+                    <div class="stat-label">COMBO</div>
+                    <div class="stat-value" id="comboStat">x1</div>
+                </div>
+            </div>
+            <div class="stat">
+                <span class="stat-icon">💎</span>
+                <div>
+                    <div class="stat-label">CRIPTO-COINS</div>
+                    <div class="stat-value" id="coinStat">0</div>
+                </div>
+            </div>
+            <div class="stat">
+                <span class="stat-icon">❤️</span>
+                <div>
+                    <div class="stat-label">INTEGRIDAD</div>
+                    <div class="stat-value" id="healthStat">100%</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Área principal del juego -->
+        <div class="game-wrapper">
+            <div class="game-container" id="gameContainer">
+                <!-- Aquí se dibuja el juego con canvas -->
+                <canvas id="gameCanvas" width="800" height="400"></canvas>
+                
+                <!-- Overlays visuales -->
+                <div class="scan-line"></div>
+                <div class="vignette"></div>
+                
+                <!-- HUD del juego -->
+                <div class="game-hud">
+                    <div class="hud-score">
+                        <div class="hud-label">PUNTUACIÓN</div>
+                        <div class="hud-value" id="scoreHud">0000000</div>
+                    </div>
+                    <div class="hud-multiplier" id="multiplierHud">
+                        <span class="multiplier-badge">x1</span>
+                    </div>
+                    <div class="hud-powerups" id="powerupHud">
+                        <!-- Power-ups activos aparecen aquí -->
+                    </div>
+                </div>
+                
+                <!-- Pantalla de inicio -->
+                <div class="screen" id="startScreen">
+                    <div class="screen-content">
+                        <h2 class="neon-title">¿ESTÁS LISTO, RUNNER?</h2>
+                        <div class="character-preview">
+                            <div class="ninja-sprite" id="ninjaPreview"></div>
+                        </div>
+                        <div class="controls-info">
+                            <div class="control-item">
+                                <span class="key">SPACE</span>
+                                <span class="action">SALTAR / DOBLE SALTO</span>
+                            </div>
+                            <div class="control-item">
+                                <span class="key">S</span>
+                                <span class="action">DESLIZARSE</span>
+                            </div>
+                            <div class="control-item">
+                                <span class="key">D</span>
+                                <span class="action">ATAQUE RÁPIDO</span>
+                            </div>
+                            <div class="control-item">
+                                <span class="key">CLICK</span>
+                                <span class="action">INTERACTUAR</span>
+                            </div>
+                        </div>
+                        <button class="start-btn" id="startButton">
+                            <i class="fas fa-play"></i>
+                            INICIAR SISTEMA
+                        </button>
+                        <div class="difficulty-selector">
+                            <button class="difficulty-btn active" data-difficulty="normal">NORMAL</button>
+                            <button class="difficulty-btn" data-difficulty="hard">HARD</button>
+                            <button class="difficulty-btn" data-difficulty="cyber">CYBER</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pantalla de game over -->
+                <div class="screen" id="gameOverScreen" style="display: none;">
+                    <div class="screen-content">
+                        <h2 class="neon-title red">SISTEMA COMPROMETIDO</h2>
+                        <div class="result-stats">
+                            <div class="result-stat">
+                                <span>PUNTUACIÓN FINAL</span>
+                                <span class="result-value" id="finalScore">0000000</span>
+                            </div>
+                            <div class="result-stat">
+                                <span>COMBO MÁXIMO</span>
+                                <span class="result-value" id="maxCombo">x1</span>
+                            </div>
+                            <div class="result-stat">
+                                <span>CRIPTO-COINS RECOGIDAS</span>
+                                <span class="result-value" id="finalCoins">0</span>
+                            </div>
+                            <div class="result-stat">
+                                <span>DISTANCIA RECORRIDA</span>
+                                <span class="result-value" id="distance">0m</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Logros desbloqueados -->
+                        <div class="achievements-earned" id="achievementsContainer">
+                            <h3>LOGROS DESBLOQUEADOS</h3>
+                            <div class="achievements-grid">
+                                <!-- Se llena dinámicamente -->
+                            </div>
+                        </div>
+                        
+                        <div class="retry-options">
+                            <button class="retry-btn" id="retryButton">
+                                <i class="fas fa-redo"></i>
+                                REINICIAR SISTEMA
+                            </button>
+                            <button class="share-btn" id="shareButton">
+                                <i class="fas fa-share-alt"></i>
+                                COMPARTIR RÉCORD
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Barra lateral con info y power-ups -->
+            <div class="sidebar">
+                <div class="sidebar-section">
+                    <h3><i class="fas fa-cube"></i> POWER-UPS ACTIVOS</h3>
+                    <div class="powerups-list" id="activePowerups">
+                        <div class="powerup-item empty">Ninguno activo</div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3><i class="fas fa-trophy"></i> LOGROS</h3>
+                    <div class="achievements-list">
+                        <div class="achievement" data-unlocked="true">
+                            <span class="achievement-icon">🎮</span>
+                            <span class="achievement-name">Primera Ejecución</span>
+                        </div>
+                        <div class="achievement" data-unlocked="false">
+                            <span class="achievement-icon">⚡</span>
+                            <span class="achievement-name">Velocidad +2x</span>
+                        </div>
+                        <div class="achievement" data-unlocked="false">
+                            <span class="achievement-icon">💯</span>
+                            <span class="achievement-name">100k Puntos</span>
+                        </div>
+                        <div class="achievement" data-unlocked="false">
+                            <span class="achievement-icon">🤖</span>
+                            <span class="achievement-name">Destruye 10 Drones</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3><i class="fas fa-user-ninja"></i> SKINS DISPONIBLES</h3>
+                    <div class="skins-grid">
+                        <div class="skin active" data-skin="default">
+                            <div class="skin-preview ninja-default"></div>
+                            <span>NINJA BASE</span>
+                        </div>
+                        <div class="skin" data-skin="cyber">
+                            <div class="skin-preview ninja-cyber"></div>
+                            <span>CYBER NINJA</span>
+                            <span class="skin-price">500 💎</span>
+                        </div>
+                        <div class="skin" data-skin="neon">
+                            <div class="skin-preview ninja-neon"></div>
+                            <span>NEON SHADOW</span>
+                            <span class="skin-price">1000 💎</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Controles móviles (solo en móvil) -->
+        <div class="mobile-controls">
+            <div class="mobile-controls-row">
+                <button class="mobile-btn mobile-jump">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>SALTAR</span>
+                </button>
+                <button class="mobile-btn mobile-slide">
+                    <i class="fas fa-arrow-down"></i>
+                    <span>DESLIZAR</span>
+                </button>
+            </div>
+            <div class="mobile-controls-row">
+                <button class="mobile-btn mobile-attack">
+                    <i class="fas fa-bolt"></i>
+                    <span>ATAQUE</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Sección de compartición -->
+        <div class="share-section">
+            <h3>¿DOMINASTE NEO-TOKYO? ¡COMPARTE TU RÉCORD!</h3>
+            <div class="share-buttons">
+                <button class="social-share twitter" onclick="shareTwitter()">
+                    <i class="fab fa-twitter"></i> Twitter
+                </button>
+                <button class="social-share facebook" onclick="shareFacebook()">
+                    <i class="fab fa-facebook"></i> Facebook
+                </button>
+                <button class="social-share copy-link" onclick="copyLink()">
+                    <i class="fas fa-link"></i> Copiar Enlace
+                </button>
+            </div>
+            <div class="game-link">
+                <input type="text" readonly value="https://tu-usuario.github.io/cyber-ninja-runner" id="gameUrl">
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="game-footer">
+            <p>CYBER NINJA RUNNER v1.0 | Desarrollado con <i class="fas fa-heart"></i> para la escena indie | 
+                <a href="#" id="creditsBtn">Créditos</a> | 
+                <a href="#" id="settingsBtn">Configuración</a>
+            </p>
+            <div class="tech-badges">
+                <span class="badge">HTML5</span>
+                <span class="badge">CSS3</span>
+                <span class="badge">JavaScript</span>
+                <span class="badge">Canvas API</span>
+                <span class="badge">Pixel Art</span>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Modal de configuración -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <h2><i class="fas fa-cog"></i> CONFIGURACIÓN DEL SISTEMA</h2>
+            <div class="setting">
+                <label>Volumen SFX</label>
+                <input type="range" id="sfxVolume" min="0" max="100" value="80">
+            </div>
+            <div class="setting">
+                <label>Volumen Música</label>
+                <input type="range" id="musicVolume" min="0" max="100" value="60">
+            </div>
+            <div class="setting">
+                <label>Efectos Visuales</label>
+                <select id="graphicsQuality">
+                    <option value="low">Bajo</option>
+                    <option value="medium" selected>Medio</option>
+                    <option value="high">Alto</option>
+                    <option value="ultra">Cyber</option>
+                </select>
+            </div>
+            <div class="setting">
+                <label>Controles Táctiles</label>
+                <label class="switch">
+                    <input type="checkbox" id="touchControls" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <button class="modal-close" id="closeSettings">GUARDAR Y CERRAR</button>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="game.js"></script>
+    <script>
+        // Script de inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('⚡ CYBER NINJA RUNNER - Sistema cargado');
+            // Inicialización básica
+            initializeGame();
+        });
+    </script>
+</body>
+</html>
